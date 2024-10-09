@@ -1,0 +1,48 @@
+{
+	// Docker image that will be used to create the container
+	"build": {
+		"dockerfile": "Dockerfile.Dev",
+		"context": ".."
+	},
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		// A feature set renv cache to a Docker volume. More info: https://github.com/rocker-org/devcontainer-features/tree/main/src/renv-cache
+		"ghcr.io/rocker-org/devcontainer-features/renv-cache:latest": {}
+	},
+
+	// On the first build, initialize a golem project with renv. On subsequent builds, restore the project.
+	// We use an array instead of a .sh file because we prioritize interactive logs over readability.
+	"postCreateCommand": ["/bin/sh", "-c", "INIT_FLAG=\".devcontainer/INIT_FLAG\"     &&     if [ ! -e $INIT_FLAG ]; then echo \"----------Initializing {golem} project with {renv}...\" && echo \"----------Installing {golem}...\" && Rscript -e \"renv::install('golem')\" && echo \"----------Installing REQ packages...\" && Rscript -e \"renv::install($REQ_R_PACKAGES)\" && echo \"----------Installing CORE packages...\" && Rscript -e \"renv::install($CORE_R_PACKAGES)\" && echo \"----------Initializing {golem}...\" && Rscript -e \"golem::create_golem(getwd(), check_name = FALSE, open = FALSE, overwrite = TRUE)\" && echo \"----------Initializing {renv}...\" && Rscript -e \"renv::init(settings = list(snapshot.type = 'explicit'))\"; else echo \"----------Project already initialized...\" && sed -i \"/^source(\\\"renv/d\" .Rprofile && echo \"----------Starting {renv}...\" && Rscript -e \"renv::activate()\" && Rscript -e \"renv::restore(prompt = FALSE)\"; fi     &&     echo \"----------Installing DEV packages...\" && Rscript -e \"renv::install($DEV_R_PACKAGES)\""],
+
+	// Commit and push changes after first build.
+	"postStartCommand": {
+		"commit-and-push-on-first-init": "bash .devcontainer/postStartCommand.sh"
+	},
+
+	"remoteEnv": {
+		// Variables used in postCreateCommand
+		"CORE_R_PACKAGES": "'dplyr', 'leaflet'",
+		"DEV_R_PACKAGES": "'attachment', 'devtools', 'httpgd', 'languageserver'",
+		"REQ_R_PACKAGES": "'desc', 'usethis'"
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Settings for VS Code.
+		"vscode": {
+			"extensions": [
+				// R Extensions
+				"reditorsupport.r",
+				"rdebugger.r-debugger"
+			],
+			"settings": {
+				"r.alwaysUseActiveTerminal": true,
+				"r.bracketedPaste": true,
+				"r.plot.useHttpgd": true,
+				"r.lsp.promptToInstall": false,
+				"r.lsp.diagnostics": false
+			}
+		}
+	}
+}
