@@ -9,8 +9,36 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    fluidPage(
-      golem::golem_welcome_page() # Remove this line to start building your UI
+    tags$head(
+      tags$style(HTML("
+      .fixed-button {
+        position: fixed;
+        top: 20px; /* Adjust as needed */
+        right: 20px; /* Adjust as needed */
+        z-index: 1000; /* Ensure it stays on top */
+      }
+    "))
+    ),
+    # Leave this function for adding external resources
+    golem_add_external_resources(),
+    bslib::page_navbar(
+      title = div(
+        style = "margin: 20px; padding: 10px;",
+        img(src = "www/Integral_logo_transparent.png", width = '90px'),
+        span(style = "font-size: 26px", "Stella Marie")  # Increase font size here
+      ),
+      id = "nav",
+      bslib::nav_panel("Site Map", mod_site_map_ui("site_map_1")),
+      bslib::nav_panel("Report Siting", mod_site_reporting_ui("site_reporting_1")),
+      bslib::nav_item(
+        div(
+          tags$span(
+            class = "fixed-button",
+            "Draft",
+            style = "font-size: 45px; background-color: #f44336;"
+          )
+        )
+      )
     )
   )
 }
