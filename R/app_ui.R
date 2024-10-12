@@ -29,7 +29,7 @@ app_ui <- function(request) {
       ),
       id = "nav",
       bslib::nav_panel("Site Map", mod_site_map_ui("site_map_1")),
-      bslib::nav_panel("Report Siting", mod_site_reporting_ui("site_reporting_1")),
+      bslib::nav_panel("Report Data", mod_site_reporting_ui("site_reporting_1")),
       bslib::nav_item(
         div(
           tags$span(
