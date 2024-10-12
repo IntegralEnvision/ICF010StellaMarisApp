@@ -44,7 +44,7 @@ mod_site_reporting_ui <- function(id) {
           width = 12,
           div(
             style = "display: inline-block; vertical-align: middle;",
-            actionButton(ns("auth_button"), label = "Authenticate Google Account", 
+            actionButton(ns("auth_button"), label = "AUTHENTICATE GOOGLE ACCOUNT", 
                          class = "btn-auth")  # Apply custom class
           ),
           div(
@@ -62,25 +62,25 @@ mod_site_reporting_ui <- function(id) {
               fluidRow(
                 column(
                   width = 4,
-                  textInput(ns("nest_dig"), label = "Nest Dig #"),
-                  textInput(ns("observers"), label = "Observers"),
-                  dateInput(ns("emergence_date"), label = "Emergence Date"),
-                  dateInput(ns("inventory_date"), label = "Inventory Date"),
-                  textInput(ns("number_guest"), label = "Number of Guests")
+                  textInput(ns("nest_dig"), label = "NEST DIG #"),
+                  textInput(ns("observers"), label = "OBSERVERS"),
+                  dateInput(ns("emergence_date"), label = "EMERGENCE DATE"),
+                  dateInput(ns("inventory_date"), label = "INVENTORY DATE"),
+                  textInput(ns("number_guest"), label = "NUMBER OF GUESTS")
                 ),
                 column(
                   width = 4,
-                  textInput(ns("hatched_greater_50"), label = "Hatched >50%"),
-                  textInput(ns("hatched_less_50"), label = "Hatched <50%"),
-                  textInput(ns("unhactched_whole"), label = "Unhatched Whole"),
-                  textInput(ns("unhatched_damaged"), label = "Unhatched Damaged")
+                  textInput(ns("hatched_greater_50"), label = "HATCHED >50%"),
+                  textInput(ns("hatched_less_50"), label = "HATCHED <50%"),
+                  textInput(ns("unhactched_whole"), label = "UNHATCHED WHOLE"),
+                  textInput(ns("unhatched_damaged"), label = "UNHATCHED DAMAGED")
                 ),
                 column(
                   width = 4,
-                  textInput(ns("pipped_eggs_live"), label = "Pipped Eggs Live"),
-                  textInput(ns("pipped_eggs_dead"), label = "Pipped Eggs Dead"),
-                  textInput(ns("total_eggs"), label = "Total # Of Eggs"),
-                  textInput(ns("sucess_rate"), label = "Success Rate %")
+                  textInput(ns("pipped_eggs_live"), label = "PIPPED EGGS LIVE"),
+                  textInput(ns("pipped_eggs_dead"), label = "PIPPED EGGS DEAD"),
+                  textInput(ns("total_eggs"), label = "TOTAL # OF EGGS"),
+                  textInput(ns("sucess_rate"), label = "SUCCESS RATE %")
                 )
               )
           )
@@ -88,18 +88,21 @@ mod_site_reporting_ui <- function(id) {
         column(
           width = 3,  # Fourth column
           div(style = "border: 1px solid gray; padding: 10px; border-radius: 10px;",  # Border for fourth column
-              textInput(ns("hatchlings_dead"), label = "Hatchlings-Dead In Nest"),
-              textInput(ns("hatchlings_live"), label = "Hatchlings-Live In Nest"),
-              textInput(ns("released_at_event"), label = "Released At Event"),
-              textInput(ns("released_later"), label = "Released Later In The Day"),
-              textInput(ns("didnt_survive"), label = "Did Not Survive To Nighttime")
+              textInput(ns("hatchlings_dead"), label = "HATCHLINGS- DEAD IN NEST"),
+              textInput(ns("hatchlings_live"), label = "HATCHLINGS- LIVE IN NEST"),
+              selectInput(ns("released_at_event"), label = "RELEASED AT EVENT", 
+                          choices = c("", "Yes", "No", "N/A")),
+              selectInput(ns("released_later"), label = "RELEASED LATER IN THE DAY", 
+                          choices = c("", "Yes", "No", "N/A")),
+              selectInput(ns("didnt_survive"), label = "DID NOT SURVIVE TO NIGHTTIME", 
+                          choices = c("", "Yes", "No", "N/A"))
           )
         )
       ),
       fluidRow(
         column(
           width = 12,
-          actionButton(ns("submit_data"), label = "Submit Data", 
+          actionButton(ns("submit_data"), label = "SUBMIT DATA", 
                        class = "btn-submit")  # Apply custom class
         )
       )

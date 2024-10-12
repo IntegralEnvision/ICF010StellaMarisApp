@@ -26,7 +26,7 @@ mod_site_map_ui <- function(id) {
           border-radius: 5px;          /* Rounded corners */
         }
         .custom-button:hover {
-          background-color: #6699ff;   /* Darker green on hover */
+          background-color: #0099cc;   /* Darker green on hover */
         }
         .info-text {
           font-size: 24px;             /* Increase font size */
@@ -46,7 +46,7 @@ mod_site_map_ui <- function(id) {
               dateRangeInput(
                 inputId = ns("date_range"),
                 label = "Select Date Range",
-                start = Sys.Date() - 30,  # Default start date
+                start = as.Date("2024-01-01"),  # Default start date
                 end = Sys.Date()            # Default end date
               ),
               selectInput(
