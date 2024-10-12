@@ -8,8 +8,13 @@ License: What license is it under?
 Imports: 
     bslib,
     config,
+    dplyr,
     golem,
+    googledrive,
+    googlesheets4,
     leaflet,
+    leaflet.extras,
+    lubridate,
     shiny
 Suggests: 
     testthat (>= 3.0.0)
