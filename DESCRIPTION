@@ -9,6 +9,8 @@ Imports:
     bslib,
     config,
     dplyr,
+    pkgload,
+    gargle,
     golem,
     googledrive,
     googlesheets4,

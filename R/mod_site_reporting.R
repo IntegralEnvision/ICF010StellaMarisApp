@@ -154,7 +154,7 @@ mod_site_reporting_server <- function(id) {
     # Your Google Sheet ID (from the URL)
     sheet_id <- "1P1xYJtAaR5MdxWqb05JS6_3RqGAWbg2cZxhat2piSDc"
     
-    # This code linkes to a button for the user to authenticate their google account
+    # This code links to a button for the user to authenticate their google account
     # observeEvent(input$auth_button, {
     #   # Force a new authentication process by removing cached credentials
     #   gs4_auth(cache = FALSE, scopes <- c("https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"))
