@@ -39,22 +39,22 @@ mod_site_reporting_ui <- function(id) {
     ")),
     
     bslib::page_fluid(
-      fluidRow(
-        column(
-          width = 12,
-          div(
-            style = "display: inline-block; vertical-align: middle;",
-            actionButton(ns("auth_button"), label = "AUTHENTICATE GOOGLE ACCOUNT", 
-                         class = "btn-auth")  # Apply custom class
-          ),
-          div(
-            style = "display: inline-block; margin-left: 1px; cursor: pointer;",
-            actionButton(ns("help_icon"), label = "", 
-                         icon("question-circle", class = "text-info", style = "font-size: 22px;"),
-                         style = "background-color: transparent; border: black;")  # Clickable button style
-          )
-        )
-      ),
+      # fluidRow(
+      #   column(
+      #     width = 12,
+      #     div(
+      #       style = "display: inline-block; vertical-align: middle;",
+      #       actionButton(ns("auth_button"), label = "AUTHENTICATE GOOGLE ACCOUNT", 
+      #                    class = "btn-auth")  # Apply custom class
+      #     ),
+      #     div(
+      #       style = "display: inline-block; margin-left: 1px; cursor: pointer;",
+      #       actionButton(ns("help_icon"), label = "", 
+      #                    icon("question-circle", class = "text-info", style = "font-size: 22px;"),
+      #                    style = "background-color: transparent; border: black;")  # Clickable button style
+      #     )
+      #   )
+      # ),
       fluidRow(
         column(
           width = 9,  # Combine the first three columns
@@ -102,7 +102,7 @@ mod_site_reporting_ui <- function(id) {
       fluidRow(
         column(
           width = 12,
-          actionButton(ns("submit_data"), label = "SUBMIT DATA", 
+          actionButton(ns("submit_data"), label = "SUBMIT DATA",
                        class = "btn-submit")  # Apply custom class
         )
       )
@@ -154,10 +154,19 @@ mod_site_reporting_server <- function(id) {
     # Your Google Sheet ID (from the URL)
     sheet_id <- "1P1xYJtAaR5MdxWqb05JS6_3RqGAWbg2cZxhat2piSDc"
     
-    observeEvent(input$auth_button, {
-      # Force a new authentication process by removing cached credentials
-      gs4_auth(cache = FALSE, scopes = c("https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"))
-    })
+    # This code linkes to a button for the user to authenticate their google account
+    # observeEvent(input$auth_button, {
+    #   # Force a new authentication process by removing cached credentials
+    #   gs4_auth(cache = FALSE, scopes <- c("https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"))
+    #   if (is.null(gs4_find("sheet 1"))) {
+    #     showModal(modalDialog(
+    #       title = "Authentication Failed",
+    #       "Could not find the specified Google Sheet. Please check your access.",
+    #       easyClose = TRUE,
+    #       footer = NULL
+    #     ))
+    #   }
+    # })
     
     ######### May need to authenticate any new google account #################
     #gs4_auth(scopes = c("https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"))

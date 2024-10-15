@@ -34,6 +34,12 @@ mod_site_map_ui <- function(id) {
           text-align: center;          /* Center text */
           padding: 20px;               /* Add padding */
         }
+        .warning-text {
+          color: red;                  /* Red text color */
+          font-size: 16px;             /* Font size */
+          text-align: center;          /* Center text */
+          margin-top: 10px;            /* Spacing above the text */
+        }
       ")) # light green (90EE90)
     ),
     bslib::page_fluid(
@@ -58,8 +64,12 @@ mod_site_map_ui <- function(id) {
               ),
               actionButton(
                 inputId = ns("update_map"),
-                label = "Update Map",
+                label = "Load Map",
                 class = "custom-button"  # Use your custom class
+              ),
+              tags$p(
+                "*These are example data points and do not show the actual location of the nests. This is just an example of the possible filter options that can be applied to this map.",
+                class = "warning-text"   # Apply the warning text class
               )
             ),
             bslib::layout_column_wrap(
@@ -88,7 +98,7 @@ mod_site_map_server <- function(id) {
     data_sheet_id <- "1P1xYJtAaR5MdxWqb05JS6_3RqGAWbg2cZxhat2piSDc"  # Sheet for submitted data
     sheet_data <- reactive({
       # Read data from the Google Sheet
-      data <- read_sheet(sheet_id) %>%
+      data <- read_sheet(data_sheet_id) %>%
         mutate(Emergence_Date = ymd(Emergence_Date))  # Convert to date format
       return(data)
     })
@@ -107,7 +117,7 @@ mod_site_map_server <- function(id) {
         leaflet::addProviderTiles(
           leaflet::providers$Esri.WorldImagery,
           group = "Satellite"
-        ) %>%  # Use %>% to chain addTiles
+        ) %>%  
         leaflet::addProviderTiles(
           leaflet::providers$Esri.WorldTopoMap,
           group = "Topographic"
@@ -143,7 +153,7 @@ mod_site_map_server <- function(id) {
     observeEvent(input$update_map, {
       req(input$date_range)
       
-        sheet_data <- read_sheet(sheet_id) %>%
+        sheet_data <- read_sheet(data_sheet_id) %>%
           mutate(Emergence_Date = ymd(Emergence_Date), Nest_Dig = as.character(Nest_Dig))  # Convert to date format
         
         loc_data <- read_sheet(location_sheet_id) %>%
