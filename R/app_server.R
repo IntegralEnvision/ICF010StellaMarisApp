@@ -48,6 +48,8 @@ app_server <- function(input, output, session) {
   observe({
     req(auth_status())  # Ensure authentication is complete before proceeding
     mod_site_reporting_server("site_reporting_1")
+    mod_turtle_walk_reporting_server("turtle_walk_reporting_1")
+    mod_light_reporting_server("light_reporting_1")
     mod_site_map_server("site_map_1")
   })
 }

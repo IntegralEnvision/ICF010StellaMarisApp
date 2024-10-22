@@ -49,6 +49,13 @@ mod_site_map_ui <- function(id) {
           bslib::layout_sidebar(
             sidebar = bslib::sidebar(
               width = '300px',
+              selectInput(
+                inputId = ns("data_source"),
+                label = "Data Source",
+                choices = c("Nest Digs", "Public Turtle Walks", "Sky Quality: Light Measurments"), 
+                selected = NULL,
+                multiple = FALSE
+              ),
               dateRangeInput(
                 inputId = ns("date_range"),
                 label = "Select Date Range",

@@ -8,27 +8,35 @@ app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
-    # Your application UI logic
+    
     tags$head(
       tags$style(HTML("
-      .fixed-button {
-        position: fixed;
-        top: 20px; /* Adjust as needed */
-        right: 20px; /* Adjust as needed */
-        z-index: 1000; /* Ensure it stays on top */
-      }
-    "))
+        .fixed-button {
+          position: fixed;
+          top: 20px; /* Adjust as needed */
+          right: 20px; /* Adjust as needed */
+          z-index: 1000; /* Ensure it stays on top */
+        }
+        /* Reduce spacing between the navbar and module content */
+        .bslib-nav {
+          margin-bottom: 5px; /* Adjust the value as needed */
+        }
+        .navbar-brand {
+          margin-bottom: 0; /* Remove margin from the brand/logo */
+        }
+      "))
     ),
-    # Leave this function for adding external resources
-    golem_add_external_resources(),
+    
     bslib::page_navbar(
       title = div(
-        style = "margin: 20px; padding: 10px;",
-        img(src = "www/Integral_logo_transparent.png", width = '90px'),
-        span(style = "font-size: 26px", "Stella Marie")  # Increase font size here
+        style = "margin: 10px; padding: 5px;",  # Reduced margin for the title
+        img(src = "www/SM.LOGO.png", width = '180px'),
+        span(style = "font-size: 26px", "")  # Increase font size here
       ),
       id = "nav",
-      bslib::nav_panel("Report Data", mod_site_reporting_ui("site_reporting_1")),
+      bslib::nav_panel("Report Nest Dig Data", mod_site_reporting_ui("site_reporting_1")),
+      bslib::nav_panel("Report Turtle Walk Data", mod_turtle_walk_reporting_ui("turtle_walk_reporting_1")),
+      bslib::nav_panel("Report Light Survey Data", mod_light_reporting_ui("light_reporting_1")),
       bslib::nav_panel("Site Map", mod_site_map_ui("site_map_1")),
       bslib::nav_item(
         div(

@@ -70,6 +70,7 @@ mod_site_reporting_ui <- function(id) {
                 ),
                 column(
                   width = 4,
+                  selectInput(ns("species"), label = "Species", choices = c("", "Cc", "Cm", "Dc", "Ei", "Lk", "Other")),
                   textInput(ns("hatched_greater_50"), label = "HATCHED >50%"),
                   textInput(ns("hatched_less_50"), label = "HATCHED <50%"),
                   textInput(ns("unhactched_whole"), label = "UNHATCHED WHOLE"),
@@ -102,7 +103,7 @@ mod_site_reporting_ui <- function(id) {
       fluidRow(
         column(
           width = 12,
-          actionButton(ns("submit_data"), label = "SUBMIT DATA",
+          actionButton(ns("submit_data"), label = "SUBMIT NEST DIG DATA",
                        class = "btn-submit")  # Apply custom class
         )
       )
@@ -182,6 +183,7 @@ mod_site_reporting_server <- function(id) {
         Emergence_Date = input$emergence_date,
         Inventory_Date = input$inventory_date,
         Number_of_Guests = as.integer(input$number_guest),
+        Species = as.character(input$species),
         Hatched_Greater_50 = input$hatched_greater_50,
         Hatched_Less_50 = input$hatched_less_50,
         Unhatched_Whole = input$unhactched_whole,
@@ -203,11 +205,11 @@ mod_site_reporting_server <- function(id) {
       data(updated_data)
       
       # Write the new entry to Google Sheets
-      sheet_append(sheet_id, new_entry)
+      sheet_append(sheet_id, new_entry, sheet = 'Nest_Digs')
       
       # Clear the inputs after submission (DOES NOT WORK RIGHT NOW)
       lapply(c("nest_dig", "observers", "emergence_date", "inventory_date", 
-               "number_guest", "hatched_greater", "hatched_less", 
+               "number_guest", "species", "hatched_greater", "hatched_less", 
                "unhactched_whole", "unhatched_damaged", "pipped_eggs_live", 
                "pipped_eggs_dead", "total_eggs", "sucess_rate", 
                "hatchlings_dead", "hatchlings_live", "released_at_event", 
@@ -219,7 +221,7 @@ mod_site_reporting_server <- function(id) {
       
       showModal(modalDialog(
         title = "Success",
-        "Data Successfully Uploaded.",
+        "Data Successfully Uploaded to Nest_Digs.",
         easyClose = TRUE,
         footer = NULL
       ))
