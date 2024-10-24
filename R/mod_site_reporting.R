@@ -36,6 +36,17 @@ mod_site_reporting_ui <- function(id) {
       .btn-submit:hover {
         background-color: #0099cc;  /* Darker blue on hover */
       }
+      .btn-clear {
+        background-color: #ff6666; 
+        border-color: gray; 
+        color: black; 
+        display: block; 
+        margin: auto; 
+        margin-top: 15px;
+      }
+      .btn-clear:hover {
+        background-color: #cc0000; 
+      }
     ")),
     
     bslib::page_fluid(
@@ -70,7 +81,7 @@ mod_site_reporting_ui <- function(id) {
                 ),
                 column(
                   width = 4,
-                  selectInput(ns("species"), label = "Species", choices = c("", "Cc", "Cm", "Dc", "Ei", "Lk", "Other")),
+                  selectInput(ns("species"), label = "SPECIES", choices = c("", "Cc", "Cm", "Dc", "Ei", "Lk", "Other")),
                   textInput(ns("hatched_greater_50"), label = "HATCHED >50%"),
                   textInput(ns("hatched_less_50"), label = "HATCHED <50%"),
                   textInput(ns("unhactched_whole"), label = "UNHATCHED WHOLE"),
@@ -102,9 +113,14 @@ mod_site_reporting_ui <- function(id) {
       ),
       fluidRow(
         column(
-          width = 12,
-          actionButton(ns("submit_data"), label = "SUBMIT NEST DIG DATA",
-                       class = "btn-submit")  # Apply custom class
+          width = 2,
+          align = "left",  # Align the button to the left
+          actionButton(ns("clear_data"), label = "CLEAR INPUTS", class = "btn-clear")  # Clear Data button
+        ),
+        column(
+          width = 8,
+          align = "center",  # Center the button
+          actionButton(ns("submit_data"), label = "SUBMIT NEST DIG DATA", class = "btn-submit")  # Submit Data button
         )
       )
     )
@@ -142,20 +158,10 @@ mod_site_reporting_server <- function(id) {
       stringsAsFactors = FALSE
     ))
     
-    # Observe help icon click
-    observeEvent(input$help_icon, {
-      showModal(modalDialog(
-        title = "Help",
-        "New users may need to authenticate their google account in order to submit data. This button will send you to a secure google authentication page. Please login to your google account and select 'See, edit, create, and delete all your Google Sheets spreadsheets' in order to procceed.",
-        easyClose = TRUE,
-        footer = NULL
-      ))
-    })
-    
     # Your Google Sheet ID (from the URL)
     sheet_id <- "1P1xYJtAaR5MdxWqb05JS6_3RqGAWbg2cZxhat2piSDc"
     
-    # This code links to a button for the user to authenticate their google account
+    # This code links to a button for the user to authenticate their google account. It is not used right now
     # observeEvent(input$auth_button, {
     #   # Force a new authentication process by removing cached credentials
     #   gs4_auth(cache = FALSE, scopes <- c("https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"))
@@ -207,24 +213,35 @@ mod_site_reporting_server <- function(id) {
       # Write the new entry to Google Sheets
       sheet_append(sheet_id, new_entry, sheet = 'Nest_Digs')
       
-      # Clear the inputs after submission (DOES NOT WORK RIGHT NOW)
-      lapply(c("nest_dig", "observers", "emergence_date", "inventory_date", 
-               "number_guest", "species", "hatched_greater", "hatched_less", 
-               "unhactched_whole", "unhatched_damaged", "pipped_eggs_live", 
-               "pipped_eggs_dead", "total_eggs", "sucess_rate", 
-               "hatchlings_dead", "hatchlings_live", "released_at_event", 
-               "released_later", "didnt_survive"), function(x) {
-                 updateTextInput(session, ns(x), value = "")
-               })
-      updateDateInput(session, ns("emergence_date"), value = Sys.Date())
-      updateDateInput(session, ns("inventory_date"), value = Sys.Date())
-      
       showModal(modalDialog(
         title = "Success",
         "Data Successfully Uploaded to Nest_Digs.",
         easyClose = TRUE,
         footer = NULL
       ))
+    })
+    observeEvent(input$clear_data, {
+      print('clear button pushed')
+      # Clear text inputs
+      updateTextInput(session, "nest_dig", value = "")
+      updateTextInput(session, "observers", value = "")
+      updateTextInput(session, "number_guest", value = "")
+      updateTextInput(session, "hatched_greater_50", value = "")
+      updateTextInput(session, "hatched_less_50", value = "")
+      updateTextInput(session, "unhactched_whole", value = "")
+      updateTextInput(session, "unhatched_damaged", value = "")
+      updateTextInput(session, "pipped_eggs_live", value = "")
+      updateTextInput(session, "pipped_eggs_dead", value = "")
+      updateTextInput(session, "total_eggs", value = "")
+      updateTextInput(session, "sucess_rate", value = "")
+      updateTextInput(session, "hatchlings_dead", value = "")
+      updateTextInput(session, "hatchlings_live", value = "")
+      updateDateInput(session, "emergence_date", value = Sys.Date())
+      updateDateInput(session, "inventory_date", value = Sys.Date())
+      updateSelectInput(session, "species", selected = "")
+      updateSelectInput(session, "released_at_event", selected = "")
+      updateSelectInput(session, "released_later", selected = "")
+      updateSelectInput(session, "didnt_survive", selected = "")
     })
   })
 }
