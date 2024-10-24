@@ -40,7 +40,7 @@ mod_site_map_ui <- function(id) {
           text-align: center;          /* Center text */
           margin-top: 10px;            /* Spacing above the text */
         }
-      ")) # light green (90EE90)
+      "))
     ),
     bslib::page_fluid(
       bslib::navset_card_underline(
@@ -51,23 +51,49 @@ mod_site_map_ui <- function(id) {
               width = '300px',
               selectInput(
                 inputId = ns("data_source"),
-                label = "Data Source",
-                choices = c("Nest Digs", "Public Turtle Walks", "Sky Quality: Light Measurments"), 
+                label = "DATA SOURCE",
+                choices = c("", "Nest Digs", "Public Turtle Walks", "Sky Quality: Light Measurments"), 
                 selected = NULL,
                 multiple = FALSE
               ),
               dateRangeInput(
                 inputId = ns("date_range"),
-                label = "Select Date Range",
+                label = "SELECT DATE RANGE",
                 start = as.Date("2024-01-01"),  # Default start date
-                end = Sys.Date()            # Default end date
+                end = Sys.Date()                 # Default end date
               ),
-              selectInput(
-                inputId = ns("nest_dig"),
-                label = "Nest Dig",
-                choices = c("All Sites", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"),  # Add your locations here
-                selected = NULL,
-                multiple = FALSE
+              # Conditional UI for Nest Digs
+              conditionalPanel(
+                condition = sprintf("input['%s'] == 'Nest Digs'", ns("data_source")),
+                selectInput(
+                  inputId = ns("nest_dig"),
+                  label = "NEST DIG",
+                  choices = c("All Sites", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"),
+                  selected = NULL,
+                  multiple = FALSE
+                )
+              ),
+              # Conditional UI for Public Turtle Walks
+              conditionalPanel(
+                condition = sprintf("input['%s'] == 'Public Turtle Walks'", ns("data_source")),
+                selectInput(
+                  inputId = ns("walk_site"),
+                  label = "WALK SITE",
+                  choices = c("All Sites", "1", "2", "3", "4"),
+                  selected = NULL,
+                  multiple = FALSE
+                )
+              ),
+              # Conditional UI for Sky Quality Measurements
+              conditionalPanel(
+                condition = sprintf("input['%s'] == 'Sky Quality: Light Measurments'", ns("data_source")),
+                selectInput(
+                  inputId = ns("study_site"),
+                  label = "STUDY SITE",
+                  choices = c("All Sites", "1", "2", "3"),
+                  selected = NULL,
+                  multiple = FALSE
+                )
               ),
               actionButton(
                 inputId = ns("update_map"),
@@ -94,6 +120,8 @@ mod_site_map_ui <- function(id) {
     )
   )
 }
+
+
     
 #' site_map Server Functions
 #'
@@ -103,19 +131,7 @@ mod_site_map_server <- function(id) {
     ns <- session$ns
     
     data_sheet_id <- "1P1xYJtAaR5MdxWqb05JS6_3RqGAWbg2cZxhat2piSDc"  # Sheet for submitted data
-    sheet_data <- reactive({
-      # Read data from the Google Sheet
-      data <- read_sheet(data_sheet_id) %>%
-        mutate(Emergence_Date = ymd(Emergence_Date))  # Convert to date format
-      return(data)
-    })
-    
     location_sheet_id <- "1TZF3y-ABfs8bCWHhQOonOHw9r7vdTO_iI0UeqP7ZdqQ" # Sheet for Nest locations
-    location_data <- reactive({
-      loc_data <- read_sheet(location_sheet_id) %>%
-        mutate(Nest_Dig = as.character(Nest_Dig))  # Convert to character
-      return(loc_data)
-    })
     
     # Render the Leaflet map
     output$map <- renderLeaflet({
@@ -124,58 +140,91 @@ mod_site_map_server <- function(id) {
         leaflet::addProviderTiles(
           leaflet::providers$Esri.WorldImagery,
           group = "Satellite"
-        ) %>%  
+        ) %>%
         leaflet::addProviderTiles(
           leaflet::providers$Esri.WorldTopoMap,
           group = "Topographic"
         ) %>%
         leaflet::addLayersControl(
-          baseGroups = c(
-            "OSM",
-            "Topographic",
-            "Satellite"
-          )) %>%
+          baseGroups = c("OSM", "Topographic", "Satellite")) %>%
         addTiles() 
-    })
-    
-    observe({
-      loc_data <- location_data()
-      
-      if (!is.null(loc_data) && nrow(loc_data) > 0) {
-        leafletProxy(ns("map")) %>%
-          clearMarkers() %>%
-          addMarkers(data = loc_data,
-                            lng = ~Longitude,
-                            lat = ~Latitude,
-                            popup = ~paste(
-                              "<br><b>Nest Dig:</b>", Nest_Dig))
-                            # icon = awesomeIcons(
-                            #   icon = 'circle',  # Change to desired icon (without library)
-                            #   markerColor = 'blue' # Change to desired color
-                            # ))  # Customize popup content as needed
-      }
     })
     
     # Observe the update map button
     observeEvent(input$update_map, {
-      req(input$date_range)
       
-        sheet_data <- read_sheet(data_sheet_id) %>%
-          mutate(Emergence_Date = ymd(Emergence_Date), Nest_Dig = as.character(Nest_Dig))  # Convert to date format
-        
-        loc_data <- read_sheet(location_sheet_id) %>%
+      # Check if a data source is selected
+      if (is.null(input$data_source) || input$data_source == "") {
+        showNotification("Please select a data source", type = "warning")
+        return()  # Exit if no data source is selected
+      }
+      req(input$data_source)
+      
+      data_sheet_name <- switch(input$data_source,
+                                "Nest Digs" = "Nest_Digs",                      
+                                "Public Turtle Walks" = "Turtle_Walks",        
+                                "Sky Quality: Light Measurments" = "Light_Measurments"  
+      )
+      
+      # Load the relevant data from the specified sheet
+      sheet_data <- read_sheet(data_sheet_id, sheet = data_sheet_name)
+      
+      # Check for the presence of Emergence_Date and rename if it exists
+      if ("Emergence_Date" %in% colnames(sheet_data)) {
+        sheet_data <- sheet_data %>%
+          rename(Date = Emergence_Date) %>%
+          mutate(Date = ymd(Date))  # Convert to date format
+      } else if ("Date" %in% colnames(sheet_data)) {
+        sheet_data <- sheet_data %>%
+          mutate(Date = ymd(Date))  # Convert to date format
+      } else {
+        showNotification("No valid date column found", type = "error")
+        return()  # Exit if no date column is found
+      }
+      
+      location_sheet_name <- switch(input$data_source,
+                                    "Nest Digs" = "Nest_Digs",                      
+                                    "Public Turtle Walks" = "Turtle_Walks",        
+                                    "Sky Quality: Light Measurments" = "Light_Measurments"  
+      )
+      
+      # Load the relevant location data from the specified sheet
+      loc_data <- read_sheet(location_sheet_id, sheet = location_sheet_name)
+      
+      # Process loc_data based on data source
+      if (input$data_source == "Nest Digs") {
+        loc_data <- loc_data %>%
           mutate(Nest_Dig = as.character(Nest_Dig))
+        sheet_data <- sheet_data %>%
+          mutate(Nest_Dig = as.character(Nest_Dig))  # Convert to character if needed
+        filter_col <- "Nest_Dig"
+        selected_site <- input$nest_dig
+      } else if (input$data_source == "Public Turtle Walks") {
+        loc_data <- loc_data %>%
+          mutate(Walk_Site = as.character(Walk_Site))
+        sheet_data <- sheet_data %>%
+          mutate(Walk_Site = as.character(Walk_Site))
+        filter_col <- "Walk_Site"
+        selected_site <- input$walk_site
+      } else if (input$data_source == "Sky Quality: Light Measurments") {
+        loc_data <- loc_data %>%
+          mutate(Study_Site = as.character(Study_Site))
+        sheet_data <- sheet_data %>%
+          mutate(Study_Site = as.character(Study_Site)) 
+        filter_col <- "Study_Site"
+        selected_site <- input$study_site
+      }
       
-      # Filter the data based on the date range and nest dig
+      # Filter the data based on the date range and selected site
       filtered_data <- sheet_data %>%
-        filter(!is.na(Emergence_Date) & 
-                 Emergence_Date >= input$date_range[1] & 
-                 Emergence_Date <= input$date_range[2] & 
-                 (Nest_Dig == input$nest_dig | input$nest_dig == "All Sites"))
+        filter(
+          !is.na(Date) & Date >= input$date_range[1] & Date <= input$date_range[2] &
+            (get(filter_col) == selected_site | selected_site == "All Sites")
+        )
       
-      # Join with location data to get Longitude and Latitude
+      # Join filtered data with location data to get Longitude and Latitude
       map_data <- filtered_data %>%
-        left_join(loc_data, by = "Nest_Dig")
+        left_join(loc_data, by = filter_col)
       
       # Add points to the Leaflet map
       leafletProxy(ns("map")) %>%
@@ -183,8 +232,7 @@ mod_site_map_server <- function(id) {
         addMarkers(data = map_data,
                    lng = ~Longitude,
                    lat = ~Latitude,
-                   popup = ~paste(
-                              "<br><b>Nest Dig:</b>", Nest_Dig))  # Customize popup content as needed
+                   popup = ~paste("<br><b>Site:</b>", get(filter_col)))  # Customize popup content as needed
     })
   })
 }
