@@ -177,7 +177,7 @@ mod_light_reporting_server <- function(id){
       data(updated_data)
       
       # Write the new entry to Google Sheets, targeting 'Light_Surveys'
-      sheet_append(sheet_id, new_entry, sheet = "Light_Surveys")
+      sheet_append(sheet_id, new_entry, sheet = "Light_Measurments")
       
       # Clear the inputs after submission
       lapply(c("measurement_date", "study_site", "observer", "wp", 
