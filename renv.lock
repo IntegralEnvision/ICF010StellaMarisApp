@@ -1098,7 +1098,7 @@
     },
     "terra": {
       "Package": "terra",
-      "Version": "1.7-78",
+      "Version": "1.7-83",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1106,7 +1106,7 @@
         "Rcpp",
         "methods"
       ],
-      "Hash": "8f020def0792119cb98bd8f696dab22d"
+      "Hash": "fbeffe988419d292225a57cf9c284802"
     },
     "tibble": {
       "Package": "tibble",
@@ -1210,7 +1210,7 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "3.0.1",
+      "Version": "3.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1218,7 +1218,7 @@
         "grDevices",
         "graphics"
       ],
-      "Hash": "07909200e8bbe90426fbfeb73e1e27aa"
+      "Hash": "cc2d62c76458d425210d1eb1478b30b4"
     },
     "xfun": {
       "Package": "xfun",

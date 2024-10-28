@@ -3,6 +3,8 @@
 export(run_app)
 import(bslib)
 import(dplyr)
+import(gargle)
+import(googleAuthR)
 import(googledrive)
 import(googlesheets4)
 import(leaflet)

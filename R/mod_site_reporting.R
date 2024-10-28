@@ -221,7 +221,6 @@ mod_site_reporting_server <- function(id) {
       ))
     })
     observeEvent(input$clear_data, {
-      print('clear button pushed')
       # Clear text inputs
       updateTextInput(session, "nest_dig", value = "")
       updateTextInput(session, "observers", value = "")
