@@ -17,6 +17,7 @@ Imports:
     leaflet,
     leaflet.extras,
     lubridate,
+    pkgload,
     shiny
 Suggests: 
     testthat (>= 3.0.0)

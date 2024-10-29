@@ -4,6 +4,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import gargle
+#' @import pkgload
 #' @import googleAuthR
 #' @import googlesheets4
 #' @noRd
